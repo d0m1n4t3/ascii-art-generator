@@ -15,6 +15,10 @@ def grayify(image):
 def pixels_to_ascii(image):
     pixels = image.getdata()
     characters = "".join([ASCII_CHARS[pixel // 25] for pixel in pixels])
+    # Scale each pixel value (0-255) to the available ASCII character range.
+    characters = "".join(
+        [ASCII_CHARS[int(pixel * (len(ASCII_CHARS) - 1) / 255)] for pixel in pixels]
+    )
     return characters
 
 def convert_image_to_ascii(path, new_width=100):
@@ -31,6 +35,12 @@ def convert_image_to_ascii(path, new_width=100):
     img_width = image.width
     ascii_img = "
 ".join([ascii_str[index:(index+img_width)] for index in range(0, len(ascii_str), img_width)])
+    ascii_img = "\n".join(
+        [
+            ascii_str[index : (index + img_width)]
+            for index in range(0, len(ascii_str), img_width)
+        ]
+    )
     return ascii_img
 
 if __name__ == "__main__":
