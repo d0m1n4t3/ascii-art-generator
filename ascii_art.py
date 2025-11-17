@@ -6,7 +6,7 @@ ASCII_CHARS = "@%#*+=-:. "
 def resize_image(image, new_width=100):
     width, height = image.size
     ratio = height / width / 1.65
-    new_height = int(new_width * ratio)
+    new_height = max(1, int(new_width * ratio))
     return image.resize((new_width, new_height))
 
 def grayify(image):
@@ -14,7 +14,10 @@ def grayify(image):
 
 def pixels_to_ascii(image):
     pixels = image.getdata()
-    characters = "".join([ASCII_CHARS[pixel // 25] for pixel in pixels])
+    scale = len(ASCII_CHARS) - 1
+    characters = "".join(
+        [ASCII_CHARS[pixel * scale // 255] for pixel in pixels]
+    )
     return characters
 
 def convert_image_to_ascii(path, new_width=100):
@@ -29,8 +32,12 @@ def convert_image_to_ascii(path, new_width=100):
 
     ascii_str = pixels_to_ascii(image)
     img_width = image.width
-    ascii_img = "
-".join([ascii_str[index:(index+img_width)] for index in range(0, len(ascii_str), img_width)])
+    ascii_img = "\n".join(
+        [
+            ascii_str[index : index + img_width]
+            for index in range(0, len(ascii_str), img_width)
+        ]
+    )
     return ascii_img
 
 if __name__ == "__main__":
